@@ -20,6 +20,12 @@ const handcheck = (data, server) => {
     const clientId = uuid.v4();
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
 
+    // Generate initials informations to the client
+    const handcheckAnswer = {
+        uuid: clientId,
+        color: randomColor,
+    };
+
     //Register a new client
     clients[clientId] = {
         address: data.address,
@@ -27,12 +33,27 @@ const handcheck = (data, server) => {
         color: randomColor,
     };
 
-    // Send uuid to the client
-    server.send("handcheck_" + JSON.stringify({ uuid: clientId, color: randomColor }), clients[clientId].port, clients[clientId].address, function (error) {
+    server.send("handcheck_" + JSON.stringify(handcheckAnswer), clients[clientId].port, clients[clientId].address, function (error) {
         if (error) {
             client.close();
         } else {
             console.log(`[${clientId}] Created !`);
+
+            // Send a connexion for each clients already ingame
+            Object.keys(clients).forEach(cId => {
+                if (cId !== clientId) {
+                    const clientData = { uuid: cId, color: clients[cId].color }
+                    server.send("connexion_" + JSON.stringify(clientData), clients[clientId].port, clients[clientId].address, function (error) {
+                        if (error) {
+                            client.close();
+                        } else {
+                            console.log(`[${clientId}] Send connexion !`);
+                        }
+                    });
+                }
+            });
+
+            // Send connexion of the new client to others clients
             Object.keys(clients).forEach(cId => {
                 if (cId !== clientId) {
                     server.send("connexion_" + JSON.stringify({ uuid: clientId, color: randomColor }), clients[cId].port, clients[cId].address, function (error) {
@@ -50,6 +71,11 @@ const handcheck = (data, server) => {
 
 const movement = (data, server) => {
     const clientId = data.uuid;
+    clients[clientId].position = {
+        x: data.position.x,
+        y: data.position.y,
+        z: 0
+    };
 
     Object.keys(clients).forEach(cId => {
         if (cId !== clientId) {

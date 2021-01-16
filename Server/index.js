@@ -25,6 +25,9 @@ server
         // Handle the message
         messageHandler.handle(obj, server);
     })
+    .on('close', () => {
+        console.log("close ", this)
+    })
     .on('error', (err) => {
         console.log(`server error:\n${err.stack}`);
         server.close();

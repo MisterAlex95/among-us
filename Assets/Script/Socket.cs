@@ -68,7 +68,7 @@ public class Socket : MonoBehaviour
                         // Set current player
                         currentPlayer.uuid = JsonUtility.FromJson<HandCheckAnswer>(data[1]).uuid; // Assign uuid to the client
                         currentPlayer.color = JsonUtility.FromJson<HandCheckAnswer>(data[1]).color; // Assign color to the client
-                        return;
+                        break;
                     }
                 case "connexion":
                     {
@@ -77,7 +77,7 @@ public class Socket : MonoBehaviour
                         newPlayer.uuid = JsonUtility.FromJson<HandCheckAnswer>(data[1]).uuid; // Assign uuid to the client
                         newPlayer.color = JsonUtility.FromJson<HandCheckAnswer>(data[1]).color; // Assign color to the client
                         PlayerManager.instance.NewConnexion(newPlayer);
-                        return;
+                        break;
                     }
                 case "position":
                     {
@@ -89,12 +89,10 @@ public class Socket : MonoBehaviour
                             player.position.y = playerData.position.y;
                             player.position.z = playerData.position.z;
                         }
-                        return;
+                        break;
                     }
                 default:
-                    // DynamicObject d = JsonUtility.FromJson<DynamicObject>(Encoding.UTF8.GetString(recieved));
-                    // updateDynamicObject(d);
-                    return;
+                    break;
             }
 
         }
@@ -103,5 +101,8 @@ public class Socket : MonoBehaviour
             Debug.Log(ex.ToString());
             throw ex;
         }
+
+        // Receive next Message
+        client.BeginReceive(new AsyncCallback(processDgram), client);
     }
 }
