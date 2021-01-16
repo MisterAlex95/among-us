@@ -23,6 +23,9 @@ public class MenuManager : MonoBehaviour
     public GameObject Content;
     public GameObject RoomInfo;
 
+    // Join Room
+    public InputField inputCode;
+
     private GameObject currentMenu;
 
     void Start()
@@ -59,6 +62,15 @@ public class MenuManager : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
+    public void JoinButton()
+    {
+        if (inputCode.text != null)
+        {
+            Socket.instance.JoinRoom(inputCode.text.ToUpper());
+            SceneManager.LoadScene("Game");
+        }
+    }
+
     public void RefreshListButton()
     {
         List<Room> rooms = Socket.instance.rooms;
@@ -75,7 +87,7 @@ public class MenuManager : MonoBehaviour
                 textPlayer.text = room.nbrPlayer + "/" + room.maxPlayers;
                 Text textImposter = roomInfoGO.GetComponentsInChildren<Text>().ToList().Find(x => x.name == "ImpostersCount");
                 textImposter.text = room.imposters.ToString();
-                
+
             }
         }
         Socket.instance.ListRoom();
