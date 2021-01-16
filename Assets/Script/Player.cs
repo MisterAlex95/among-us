@@ -10,9 +10,13 @@ public class Player
     public Vector3 position;
     public bool instantiate;
 
-    public Player() { }
+    public Player()
+    {
+        room = new Room();
+    }
     public Player(string _uuid, string _color)
     {
+        room = new Room();
         uuid = _uuid;
         color = _color;
         position = new Vector3(0, 0, 0);

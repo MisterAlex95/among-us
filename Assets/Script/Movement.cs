@@ -63,7 +63,9 @@ public class Movement : MonoBehaviour
             DynamicObject d = new DynamicObject();
             d.position.Set(this.transform.position.x, this.transform.position.y);
             d.uuid = Socket.instance.currentPlayer.uuid;
+            d.roomId = Socket.instance.currentPlayer.room.id;
             Socket.instance.SendDgram("JSON", JsonUtility.ToJson(d).ToString());
         }
     }
 }
+    

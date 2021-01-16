@@ -92,11 +92,7 @@ const joinRoom = (data, server) => {
         const randomColor = Math.floor(Math.random() * 16777215).toString(16);
 
         //Register the color of the client
-        clients[clientId] = {
-            address: data.address,
-            port: data.port,
-            color: randomColor
-        };
+        clients[clientId].color = randomColor;
 
         // Add client to the room
         currentRoom.players.push(clientId);
@@ -107,7 +103,6 @@ const joinRoom = (data, server) => {
                 client.close();
             } else {
                 // Send each client to the new one
-                console.log(currentRoom.players);
                 currentRoom.players.forEach(cId => {
                     if (cId !== clientId) {
                         const clientData = { uuid: cId, color: clients[cId].color }
@@ -164,13 +159,15 @@ const handcheck = (data, server) => {
 
 const movement = (data, server) => {
     const clientId = data.uuid;
+    const room = rooms[data.roomId];
+
     clients[clientId].position = {
         x: data.position.x,
         y: data.position.y,
         z: 0
     };
 
-    Object.keys(clients).forEach(cId => {
+    room.players.forEach(cId => {
         if (cId !== clientId) {
             server.send("position_" + JSON.stringify({ uuid: clientId, position: { x: data.position.x, y: data.position.y, z: 0 } }), clients[cId].port, clients[cId].address, function (error) {
                 if (error) {

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 
 [Serializable]
@@ -7,6 +6,7 @@ public class DynamicObject
 {
     public int id;
     public string uuid;
+    public string roomId;
     public string type = "movement";
     public Vector2 position;
     // public Quaternion rotation;
