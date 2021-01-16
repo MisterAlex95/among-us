@@ -149,16 +149,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 57617807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee530e39f4ec21846acf19062a96e670, type: 3}
+  m_Script: {fileID: 11500000, guid: ef55f3b0edd61294794b6e3ab1bdab05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   hostIp: 127.0.0.1
   hostPort: 8080
   playerTransform: {fileID: 1121573309}
-  player:
+  currentPlayer:
     uuid: 
     color: 
     position: {x: 0, y: 0, z: 0}
+    instantiate: 0
 --- !u!4 &57617809
 Transform:
   m_ObjectHideFlags: 0
