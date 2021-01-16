@@ -11,5 +11,4 @@ public class HandCheckAnswer
 {
     public string uuid;
     public string color;
-    public Player[] clients;
 }

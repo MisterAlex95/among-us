@@ -14,6 +14,7 @@ const handle = (data, server) => {
 
 // Receive: JSON_{"type":"handcheck"}
 // Answer Own: { uuid: 'ff6630bd-0328-4377-adac-f7eb54bc5c54' }
+// Answer Own: clients
 // Answer All: { new connexion + color }
 const handcheck = (data, server) => {
     // Generate clientId and color of the client
