@@ -1,7 +1,9 @@
 # Basic UDP server
 
 Todo: 
- - handle closed connexion:
-    - ping/pong ?
-    - check last message ? (timeout)
-    - check socket ? 
+ - EndOfLobby -> Launch game :
+    - Set impostors
+ - Private/Public room
+ - Better error handler
+ - Notification
+ - Event ?
