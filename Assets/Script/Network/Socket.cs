@@ -1,10 +1,11 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class Socket : MonoBehaviour
 {
@@ -42,6 +43,7 @@ public class Socket : MonoBehaviour
 
         HandCheck();
         client.BeginReceive(new AsyncCallback(processDgram), client);
+        StartCoroutine(PingCoroutine());
     }
 
     public void HandCheck()
@@ -70,7 +72,21 @@ public class Socket : MonoBehaviour
         d.uuid = currentPlayer.uuid;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
+    public void Ping()
+    {
+        PingMessage d = new PingMessage();
+        d.uuid = currentPlayer.uuid;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
 
+    IEnumerator PingCoroutine()
+    {
+        for (; ; )
+        {
+            yield return new WaitForSeconds(4f);
+            Ping();
+        }
+    }
     public void SendDgram(string evento, string msg)
     {
         byte[] dgram = Encoding.UTF8.GetBytes(evento + "_" + msg);
@@ -127,6 +143,13 @@ public class Socket : MonoBehaviour
                         newPlayer.uuid = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).uuid;
                         newPlayer.color = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).color;
                         PlayerManager.instance.NewConnexion(newPlayer);
+                        break;
+                    }
+                case "disconnect":
+                    {
+                        // Remove the player
+                        string uuid = JsonUtility.FromJson<DisconnectMessageAnswer>(data[1]).uuid;
+                        PlayerManager.instance.Disconnect(uuid);
                         break;
                     }
                 case "position":

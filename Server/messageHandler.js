@@ -1,7 +1,56 @@
 const uuid = require('uuid');
 const { clients, rooms } = require("./clients");
+const cron = require("node-cron");
+
+// THIS IS UGLY AF SORRY
+let _server;
+
+cron.schedule("*/5 * * * * *", function () {
+    const now = Date.now();
+
+    Object.keys(clients).forEach((clientId) => {
+        const client = clients[clientId];
+
+        if (client && client.lastMsg && client.lastMsg < now - (10 * 1000)) {
+            if (client.roomId) {
+                const currentRoom = rooms[client.roomId];
+
+                if (currentRoom) {
+                    const position = currentRoom.players.indexOf(clientId);
+                    console.log(position);
+                    if (position >= 0) { 
+                        // Let's remove the player from the room
+                        currentRoom.players.splice(position, 1);
+                        if (currentRoom.players.length === 0) {
+                            // The room is empty, let's delete it
+                            delete rooms[client.roomId];
+                            console.log(`Room[${client.roomId}] deleted !`);
+                        } else {
+                            // Send to each clients to disconnect
+                            const clientData = { uuid: clientId };
+
+                            currentRoom.players.forEach(cId => {
+                                _server.send("disconnect_" + JSON.stringify(clientData), clients[cId].port, clients[cId].address, function (error) {
+                                    if (error) {
+                                        client.close();
+                                    } else {
+                                        console.log(`[${clientId}] Send disconnect !`);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                }
+            }
+
+            delete clients[clientId];
+            console.log(`[${clientId}] disconnected`);
+        }
+    })
+});
 
 const handle = (data, server) => {
+    _server = server;
     switch (data.type) {
         case "handcheck":
             return handcheck(data, server);
@@ -13,6 +62,8 @@ const handle = (data, server) => {
             return joinRoom(data, server);
         case "list-room":
             return listRoom(data, server);
+        case "ping":
+            return pong(data, server);
         default:
             return {};
     }
@@ -25,6 +76,7 @@ const createRoom = (data, server) => {
         return [...(new Array(length))].map(() => Math.floor(Math.random() * 16).toString(16)).join('').toUpperCase();
     }
     const clientId = data.uuid;
+    clients[clientId].lastMsg = Date.now();
     const roomId = makeId(5);
     const room = {
         id: roomId,
@@ -33,6 +85,7 @@ const createRoom = (data, server) => {
         admin: clientId,
         players: []
     };
+
     rooms[roomId] = room;
     server.send("create-room_" + JSON.stringify(room), clients[clientId].port, clients[clientId].address, function (error) {
         if (error) {
@@ -45,6 +98,7 @@ const createRoom = (data, server) => {
 
 const listRoom = (data, server) => {
     const clientId = data.uuid;
+    clients[clientId].lastMsg = Date.now();
     const listRoomAnswer = {
         rooms: Object.keys(rooms).map(roomId => {
             const room = rooms[roomId];
@@ -69,6 +123,8 @@ const listRoom = (data, server) => {
 const joinRoom = (data, server) => {
     const clientId = data.uuid;
     const currentRoom = rooms[data.roomId];
+    clients[clientId].lastMsg = Date.now();
+    clients[clientId].roomId = data.roomId;
 
     if (!currentRoom) {
         const answer = { code: 404 };
@@ -146,6 +202,7 @@ const handcheck = (data, server) => {
     clients[clientId] = {
         address: data.address,
         port: data.port,
+        lastMsg: Date.now()
     };
 
     server.send("handcheck_" + JSON.stringify(handcheckAnswer), clients[clientId].port, clients[clientId].address, function (error) {
@@ -163,12 +220,14 @@ const movement = (data, server) => {
 
     if (!room) return;
 
+    clients[clientId].lastMsg = Date.now();
     clients[clientId].position = {
         x: data.position.x,
         y: data.position.y,
         z: 0
     };
 
+    console.log(room.players)
     room.players.forEach(cId => {
         if (cId !== clientId) {
             server.send("position_" + JSON.stringify({ uuid: clientId, position: { x: data.position.x, y: data.position.y, z: 0 } }), clients[cId].port, clients[cId].address, function (error) {
@@ -180,6 +239,14 @@ const movement = (data, server) => {
             });
         }
     });
+}
+
+const pong = (data, server) => {
+    const clientId = data.uuid;
+    const client = clients[clientId];
+    if (client) {
+        client.lastMsg = Date.now();
+    }
 }
 
 module.exports = {

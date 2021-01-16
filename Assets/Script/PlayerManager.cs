@@ -5,6 +5,7 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance;
     public List<Player> players = new List<Player>();
+    public List<string> playerToRemove = new List<string>();
 
     private void Awake()
     {
@@ -24,6 +25,13 @@ public class PlayerManager : MonoBehaviour
     public void NewConnexion(Player player)
     {
         players.Add(new Player(player.uuid, player.color));
+    }
+
+    public void Disconnect(string uuid)
+    {
+        Player player = players.Find((p) => p.uuid == uuid);
+        playerToRemove.Add(uuid);
+        players.Remove(player);
     }
 
     public Player GetPlayer(string uuid)

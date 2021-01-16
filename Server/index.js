@@ -2,7 +2,7 @@ const dgram = require('dgram');
 
 const parser = require('./parser');
 const messageHandler = require('./messageHandler');
-const clients = require("./clients");
+const { clients } = require("./clients");
 
 const server = dgram.createSocket('udp4');
 
