@@ -1,11 +1,10 @@
 ﻿using System;
 
 [Serializable]
-public class JoinRoomMessage
+public class JoinRoomMessage : Message
 {
     public string type = "join-room";
     public string roomId;
-    public string uuid;
 }
 
 [Serializable]

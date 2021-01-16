@@ -11,6 +11,8 @@ const handle = (data, server) => {
             return createRoom(data, server);
         case "join-room":
             return joinRoom(data, server);
+        case "list-room":
+            return listRoom(data, server);
         default:
             return {};
     }
@@ -37,6 +39,29 @@ const createRoom = (data, server) => {
             client.close();
         } else {
             console.log(`[${clientId}] Send new room !`);
+        }
+    });
+}
+
+const listRoom = (data, server) => {
+    const clientId = data.uuid;
+    const listRoomAnswer = {
+        rooms: Object.keys(rooms).map(roomId => {
+            const room = rooms[roomId];
+            return {
+                id: roomId,
+                nbrPlayer: room.players.length,
+                maxPlayers: room.maxPlayers,
+                imposters: room.imposters
+            };
+        })
+    }
+
+    server.send("list-room_" + JSON.stringify(listRoomAnswer), clients[clientId].port, clients[clientId].address, function (error) {
+        if (error) {
+            client.close();
+        } else {
+            console.log(`[${clientId}] Created !`);
         }
     });
 }

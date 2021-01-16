@@ -1,10 +1,9 @@
 ﻿using System;
 
 [Serializable]
-public class CreateRoomMessage
+public class CreateRoomMessage : Message
 {
     public string type = "create-room";
-    public string uuid;
     public int maxPlayers;
     public int imposters;
 }

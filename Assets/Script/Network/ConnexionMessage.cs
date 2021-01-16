@@ -1,8 +1,7 @@
 ﻿using System;
 
 [Serializable]
-public class ConnexionMessageAnswer
+public class ConnexionMessageAnswer : Message
 {
-    public string uuid;
     public string color;
 }

@@ -3,11 +3,14 @@ using System;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Socket : MonoBehaviour
 {
     public static Socket instance;
     public Player currentPlayer;
+    public List<Room> rooms;
 
     // Network
     public UdpClient client;
@@ -30,12 +33,12 @@ public class Socket : MonoBehaviour
         serverIp = IPAddress.Parse(hostIp);
         hostEndPoint = new IPEndPoint(serverIp, hostPort);
 
-
         client = new UdpClient();
         client.Connect(hostEndPoint);
         client.Client.Blocking = false;
 
         currentPlayer = new Player();
+        rooms = new List<Room>();
 
         HandCheck();
         client.BeginReceive(new AsyncCallback(processDgram), client);
@@ -58,6 +61,12 @@ public class Socket : MonoBehaviour
     {
         JoinRoomMessage d = new JoinRoomMessage();
         d.roomId = roomId;
+        d.uuid = currentPlayer.uuid;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
+    public void ListRoom()
+    {
+        ListRoomMessage d = new ListRoomMessage();
         d.uuid = currentPlayer.uuid;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
@@ -99,6 +108,16 @@ public class Socket : MonoBehaviour
                     {
                         currentPlayer.room.id = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).id;
                         currentPlayer.color = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).color;
+                        break;
+                    }
+                case "list-room":
+                    {
+                        Room[] receivedRooms = JsonUtility.FromJson<ListRoomMessageAnswer>(data[1]).rooms;
+                        rooms.Clear();
+                        foreach (Room roomInfo in receivedRooms.ToList())
+                        {
+                            rooms.Add(new Room(roomInfo.id, roomInfo.maxPlayers, roomInfo.imposters, roomInfo.nbrPlayer));
+                        }
                         break;
                     }
                 case "connexion":
