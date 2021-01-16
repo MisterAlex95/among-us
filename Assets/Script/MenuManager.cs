@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
@@ -9,6 +11,9 @@ public class MenuManager : MonoBehaviour
     public GameObject LocalMenu;
     public GameObject HowToPlayMenu;
     public GameObject FreeplayMenu;
+
+    public Slider impostersSlider;
+    public Slider maxPlayersSlider;
 
     private GameObject currentMenu;
 
@@ -45,4 +50,9 @@ public class MenuManager : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
+    public void ConfirmRoomCreation()
+    {
+        Socket.instance.CreateRoom((int)impostersSlider.value, (int)maxPlayersSlider.value);
+        SceneManager.LoadScene("Game");
+    }
 }

@@ -6,6 +6,7 @@ public class Player
 {
     public string uuid;
     public string color;
+    public Room room;
     public Vector3 position;
     public bool instantiate;
 

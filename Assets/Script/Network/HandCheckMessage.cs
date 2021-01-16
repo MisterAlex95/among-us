@@ -10,5 +10,4 @@ public class HandCheckMessage
 public class HandCheckAnswer
 {
     public string uuid;
-    public string color;
 }

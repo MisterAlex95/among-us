@@ -1,6 +1,3 @@
 
-const clients = {};
-
-const rooms = [];
-
-module.exports = clients;
+exports.clients = {};
+exports.rooms = {};

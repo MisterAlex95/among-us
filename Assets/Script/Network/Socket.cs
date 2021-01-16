@@ -7,14 +7,14 @@ using System.Net.Sockets;
 public class Socket : MonoBehaviour
 {
     public static Socket instance;
+    public Player currentPlayer;
+
+    // Network
     public UdpClient client;
     public IPAddress serverIp;
     public string hostIp;
     public int hostPort;
     public IPEndPoint hostEndPoint;
-    public Transform playerTransform;
-    private Vector3 nextPosition;
-    public Player currentPlayer;
 
     private void Awake()
     {
@@ -25,13 +25,11 @@ public class Socket : MonoBehaviour
         }
         instance = this;
     }
-
     void Start()
     {
         serverIp = IPAddress.Parse(hostIp);
         hostEndPoint = new IPEndPoint(serverIp, hostPort);
 
-        nextPosition = new Vector3(0, 0, 0);
 
         client = new UdpClient();
         client.Connect(hostEndPoint);
@@ -39,11 +37,29 @@ public class Socket : MonoBehaviour
 
         currentPlayer = new Player();
 
-        // HandCheck to get a uuid
+        HandCheck();
+        client.BeginReceive(new AsyncCallback(processDgram), client);
+    }
+
+    public void HandCheck()
+    {
         HandCheckMessage d = new HandCheckMessage();
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
-
-        client.BeginReceive(new AsyncCallback(processDgram), client);
+    }
+    public void CreateRoom(int imposters, int maxPlayers)
+    {
+        CreateRoomMessage d = new CreateRoomMessage();
+        d.uuid = currentPlayer.uuid;
+        d.imposters = imposters;
+        d.maxPlayers = maxPlayers;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
+    public void JoinRoom(string roomId)
+    {
+        JoinRoomMessage d = new JoinRoomMessage();
+        d.roomId = roomId;
+        d.uuid = currentPlayer.uuid;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
 
     public void SendDgram(string evento, string msg)
@@ -52,7 +68,6 @@ public class Socket : MonoBehaviour
         Debug.Log("Send new :" + msg);
         client.Send(dgram, dgram.Length);
     }
-
     public void processDgram(IAsyncResult res)
     {
         try
@@ -66,16 +81,32 @@ public class Socket : MonoBehaviour
                 case "handcheck":
                     {
                         // Set current player
-                        currentPlayer.uuid = JsonUtility.FromJson<HandCheckAnswer>(data[1]).uuid; // Assign uuid to the client
-                        currentPlayer.color = JsonUtility.FromJson<HandCheckAnswer>(data[1]).color; // Assign color to the client
+                        currentPlayer.uuid = JsonUtility.FromJson<HandCheckAnswer>(data[1]).uuid;
+                        break;
+                    }
+                case "create-room":
+                    {
+                        Room newRoom = new Room();
+                        newRoom.id = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).id;
+                        newRoom.maxPlayers = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).maxPlayers;
+                        newRoom.imposters = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).imposters;
+                        newRoom.admin = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).admin;
+                        currentPlayer.room = newRoom;
+                        JoinRoom(newRoom.id);
+                        break;
+                    }
+                case "join-room":
+                    {
+                        currentPlayer.room.id = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).id;
+                        currentPlayer.color = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).color;
                         break;
                     }
                 case "connexion":
                     {
                         // Spawn new player
                         Player newPlayer = new Player();
-                        newPlayer.uuid = JsonUtility.FromJson<HandCheckAnswer>(data[1]).uuid; // Assign uuid to the client
-                        newPlayer.color = JsonUtility.FromJson<HandCheckAnswer>(data[1]).color; // Assign color to the client
+                        newPlayer.uuid = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).uuid;
+                        newPlayer.color = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).color;
                         PlayerManager.instance.NewConnexion(newPlayer);
                         break;
                     }
@@ -89,6 +120,11 @@ public class Socket : MonoBehaviour
                             player.position.y = playerData.position.y;
                             player.position.z = playerData.position.z;
                         }
+                        break;
+                    }
+                case "error":
+                    {
+                        // todo :)
                         break;
                     }
                 default:
