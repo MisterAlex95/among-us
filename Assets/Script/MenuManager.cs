@@ -67,7 +67,7 @@ public class MenuManager : MonoBehaviour
         if (inputCode.text != null)
         {
             Socket.instance.JoinRoom(inputCode.text.ToUpper());
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Lobby");
         }
     }
 
@@ -104,6 +104,6 @@ public class MenuManager : MonoBehaviour
     public void ConfirmRoomCreation()
     {
         Socket.instance.CreateRoom((int)impostersSlider.value, (int)maxPlayersSlider.value);
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("Lobby");
     }
 }

@@ -161,6 +161,8 @@ const movement = (data, server) => {
     const clientId = data.uuid;
     const room = rooms[data.roomId];
 
+    if (!room) return;
+
     clients[clientId].position = {
         x: data.position.x,
         y: data.position.y,
