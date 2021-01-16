@@ -24,7 +24,7 @@ public class PlayerManager : MonoBehaviour
 
     public void NewConnexion(Player player)
     {
-        players.Add(new Player(player.uuid, player.color));
+        players.Add(player);
     }
 
     public void Disconnect(string uuid)

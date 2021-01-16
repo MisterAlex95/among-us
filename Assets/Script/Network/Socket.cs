@@ -142,6 +142,8 @@ public class Socket : MonoBehaviour
                         Player newPlayer = new Player();
                         newPlayer.uuid = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).uuid;
                         newPlayer.color = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).color;
+                        Vector3 position = JsonUtility.FromJson<ConnexionMessageAnswer>(data[1]).position;
+                        newPlayer.position = position;
                         PlayerManager.instance.NewConnexion(newPlayer);
                         break;
                     }

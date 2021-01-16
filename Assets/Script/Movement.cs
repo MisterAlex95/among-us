@@ -60,7 +60,7 @@ public class Movement : MonoBehaviour
         rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref velocity, .05f);
         if (targetVelocity.x != 0 || targetVelocity.y != 0)
         {
-            DynamicObject d = new DynamicObject();
+            MovementMessage d = new MovementMessage();
             d.position.Set(this.transform.position.x, this.transform.position.y);
             d.uuid = Socket.instance.currentPlayer.uuid;
             d.roomId = Socket.instance.currentPlayer.room.id;

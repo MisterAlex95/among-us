@@ -17,14 +17,14 @@ cron.schedule("*/5 * * * * *", function () {
 
                 if (currentRoom) {
                     const position = currentRoom.players.indexOf(clientId);
-                    console.log(position);
-                    if (position >= 0) { 
+
+                    if (position >= 0) {
                         // Let's remove the player from the room
                         currentRoom.players.splice(position, 1);
                         if (currentRoom.players.length === 0) {
                             // The room is empty, let's delete it
                             delete rooms[client.roomId];
-                            console.log(`Room[${client.roomId}] deleted !`);
+                            console.log(`Room [${client.roomId}] deleted !`);
                         } else {
                             // Send to each clients to disconnect
                             const clientData = { uuid: clientId };
@@ -161,7 +161,7 @@ const joinRoom = (data, server) => {
                 // Send each client to the new one
                 currentRoom.players.forEach(cId => {
                     if (cId !== clientId) {
-                        const clientData = { uuid: cId, color: clients[cId].color }
+                        const clientData = { uuid: cId, color: clients[cId].color, position: { x: clients[cId].position.x, y: clients[cId].position.y, z: 0 } }
                         server.send("connexion_" + JSON.stringify(clientData), clients[clientId].port, clients[clientId].address, function (error) {
                             if (error) {
                                 client.close();
@@ -227,7 +227,6 @@ const movement = (data, server) => {
         z: 0
     };
 
-    console.log(room.players)
     room.players.forEach(cId => {
         if (cId !== clientId) {
             server.send("position_" + JSON.stringify({ uuid: clientId, position: { x: data.position.x, y: data.position.y, z: 0 } }), clients[cId].port, clients[cId].address, function (error) {
