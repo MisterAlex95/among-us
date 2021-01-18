@@ -9,7 +9,7 @@ public class LobbyManager : MonoBehaviour
     public Text CodeText;
     public Text CounterText;
 
-    private bool IsPrivate = true;
+    private bool IsPrivate;
 
     private void Awake()
     {
@@ -21,18 +21,33 @@ public class LobbyManager : MonoBehaviour
         instance = this;
     }
 
+    void Start()
+    {
+        IsPrivate = Socket.instance.currentPlayer.room.isPrivate;
+    }
+
     void Update()
     {
         int count = PlayerManager.instance.players.Count + 1; // add +1 for you
         int totalCount = Socket.instance.currentPlayer.room.maxPlayers;
-        string code = Socket.instance.currentPlayer.room.id;
         CounterText.text = count + "/" + totalCount;
-        CodeText.text = "Code: " + code;
+
+        if (Socket.instance.currentPlayer.room.admin == Socket.instance.currentPlayer.uuid)
+        {
+            PrivateButtonText.text = (IsPrivate) ? "Private" : "Public";
+            string code = Socket.instance.currentPlayer.room.id;
+            CodeText.text = "Code: " + code;
+        }
+        else
+        {
+            CodeText.gameObject.SetActive(false);
+            PrivateButtonText.transform.parent.gameObject.SetActive(false);
+        }
     }
 
     public void SwitchPrivacity()
     {
         IsPrivate = !IsPrivate;
-        PrivateButtonText.text = (IsPrivate) ? "Private" : "Public";
+        Socket.instance.SwitchPrivacity(IsPrivate);
     }
 }

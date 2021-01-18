@@ -483,6 +483,7 @@ MonoBehaviour:
       maxPlayers: 0
       nbrPlayer: 0
       imposters: 0
+      isPrivate: 0
     position: {x: 0, y: 0, z: 0}
     instantiate: 0
   rooms: []

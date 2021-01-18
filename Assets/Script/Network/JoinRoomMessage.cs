@@ -12,4 +12,8 @@ public class JoinRoomAnswer
 {
     public string id;
     public string color;
+    public int maxPlayers;
+    public int imposters;
+    public string admin;
+    public bool isPrivate;
 }

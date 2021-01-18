@@ -51,12 +51,13 @@ public class Socket : MonoBehaviour
         HandCheckMessage d = new HandCheckMessage();
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
-    public void CreateRoom(int imposters, int maxPlayers)
+    public void CreateRoom(int imposters, int maxPlayers, bool isPrivate)
     {
         CreateRoomMessage d = new CreateRoomMessage();
         d.uuid = currentPlayer.uuid;
         d.imposters = imposters;
         d.maxPlayers = maxPlayers;
+        d.isPrivate = isPrivate;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
     public void JoinRoom(string roomId)
@@ -76,6 +77,14 @@ public class Socket : MonoBehaviour
     {
         PingMessage d = new PingMessage();
         d.uuid = currentPlayer.uuid;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
+    public void SwitchPrivacity(bool isPrivate)
+    {
+        SwitchPrivacityMessage d = new SwitchPrivacityMessage();
+        d.uuid = currentPlayer.uuid;
+        d.roomId = currentPlayer.room.id;
+        d.isPrivate = isPrivate;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
 
@@ -111,19 +120,22 @@ public class Socket : MonoBehaviour
                     }
                 case "create-room":
                     {
-                        Room newRoom = new Room();
-                        newRoom.id = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).id;
-                        newRoom.maxPlayers = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).maxPlayers;
-                        newRoom.imposters = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).imposters;
-                        newRoom.admin = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).admin;
-                        currentPlayer.room = newRoom;
-                        JoinRoom(newRoom.id);
+                        currentPlayer.room.id = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).id;
+                        currentPlayer.room.maxPlayers = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).maxPlayers;
+                        currentPlayer.room.imposters = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).imposters;
+                        currentPlayer.room.admin = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).admin;
+                        currentPlayer.room.isPrivate = JsonUtility.FromJson<CreateRoomAnswer>(data[1]).isPrivate;
+                        JoinRoom(currentPlayer.room.id);
                         break;
                     }
                 case "join-room":
                     {
                         currentPlayer.room.id = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).id;
                         currentPlayer.color = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).color;
+                        currentPlayer.room.maxPlayers = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).maxPlayers;
+                        currentPlayer.room.imposters = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).imposters;
+                        currentPlayer.room.admin = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).admin;
+                        currentPlayer.room.isPrivate = JsonUtility.FromJson<JoinRoomAnswer>(data[1]).isPrivate;
                         break;
                     }
                 case "list-room":
@@ -132,7 +144,7 @@ public class Socket : MonoBehaviour
                         rooms.Clear();
                         foreach (Room roomInfo in receivedRooms.ToList())
                         {
-                            rooms.Add(new Room(roomInfo.id, roomInfo.maxPlayers, roomInfo.imposters, roomInfo.nbrPlayer));
+                            rooms.Add(new Room(roomInfo.id, roomInfo.maxPlayers, roomInfo.imposters, roomInfo.nbrPlayer, roomInfo.isPrivate));
                         }
                         break;
                     }

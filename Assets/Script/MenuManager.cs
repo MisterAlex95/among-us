@@ -66,9 +66,14 @@ public class MenuManager : MonoBehaviour
     {
         if (inputCode.text != null)
         {
-            Socket.instance.JoinRoom(inputCode.text.ToUpper());
-            SceneManager.LoadScene("Lobby");
+            JoinAction(inputCode.text.ToUpper());
         }
+    }
+
+    private void JoinAction(string roomId)
+    {
+        Socket.instance.JoinRoom(roomId);
+        SceneManager.LoadScene("Lobby");
     }
 
     public void RefreshListButton()
@@ -87,7 +92,8 @@ public class MenuManager : MonoBehaviour
                 textPlayer.text = room.nbrPlayer + "/" + room.maxPlayers;
                 Text textImposter = roomInfoGO.GetComponentsInChildren<Text>().ToList().Find(x => x.name == "ImpostersCount");
                 textImposter.text = room.imposters.ToString();
-
+                Button joinButton = roomInfoGO.GetComponentInChildren<Button>();
+                joinButton.onClick.AddListener(delegate { JoinAction(room.id); });
             }
         }
         Socket.instance.ListRoom();
@@ -103,7 +109,7 @@ public class MenuManager : MonoBehaviour
 
     public void ConfirmRoomCreation()
     {
-        Socket.instance.CreateRoom((int)impostersSlider.value, (int)maxPlayersSlider.value);
-        SceneManager.LoadScene("Lobby");
+        Socket.instance.CreateRoom((int)impostersSlider.value, (int)maxPlayersSlider.value, false);
+        SceneManager.LoadScene("Lobby"); // Move after the answer
     }
 }

@@ -64,6 +64,8 @@ const handle = (data, server) => {
             return listRoom(data, server);
         case "ping":
             return pong(data, server);
+        case "switch-privacity":
+            return switchPrivacity(data, server);
         default:
             return {};
     }
@@ -83,7 +85,8 @@ const createRoom = (data, server) => {
         maxPlayers: data.maxPlayers,
         imposters: data.imposters,
         admin: clientId,
-        players: []
+        players: [],
+        isPrivate: data.isPrivate
     };
 
     rooms[roomId] = room;
@@ -98,18 +101,24 @@ const createRoom = (data, server) => {
 
 const listRoom = (data, server) => {
     const clientId = data.uuid;
-    clients[clientId].lastMsg = Date.now();
     const listRoomAnswer = {
-        rooms: Object.keys(rooms).map(roomId => {
-            const room = rooms[roomId];
-            return {
+        rooms: []
+    };
+
+    clients[clientId].lastMsg = Date.now();
+
+    Object.keys(rooms).forEach(roomId => {
+        const room = rooms[roomId];
+
+        if (!room.isPrivate) {
+            listRoomAnswer.rooms.push({
                 id: roomId,
                 nbrPlayer: room.players.length,
                 maxPlayers: room.maxPlayers,
                 imposters: room.imposters
-            };
-        })
-    }
+            });
+        }
+    });
 
     server.send("list-room_" + JSON.stringify(listRoomAnswer), clients[clientId].port, clients[clientId].address, function (error) {
         if (error) {
@@ -153,7 +162,7 @@ const joinRoom = (data, server) => {
         // Add client to the room
         currentRoom.players.push(clientId);
 
-        const answer = { id: data.roomId, color: randomColor };
+        const answer = { id: data.roomId, color: randomColor, maxPlayers: currentRoom.maxPlayers, imposters: currentRoom.imposters, admin: currentRoom.admin, isPrivate: currentRoom.isPrivate };
         server.send("join-room_" + JSON.stringify(answer), clients[clientId].port, clients[clientId].address, function (error) {
             if (error) {
                 client.close();
@@ -245,6 +254,15 @@ const pong = (data, server) => {
     const client = clients[clientId];
     if (client) {
         client.lastMsg = Date.now();
+    }
+}
+
+const switchPrivacity = (data, server) => {
+    const clientId = data.uuid;
+    const room = rooms[data.roomId];
+
+    if (room.admin === clientId) {
+        room.isPrivate = data.isPrivate;
     }
 }
 
