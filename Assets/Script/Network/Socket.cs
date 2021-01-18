@@ -94,6 +94,13 @@ public class Socket : MonoBehaviour
         d.roomId = currentPlayer.room.id;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
+    public void ActionKnife()
+    {
+        ActionKnifeMessage d = new ActionKnifeMessage();
+        d.roomId = currentPlayer.room.id;
+        d.uuid = currentPlayer.uuid;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
 
     IEnumerator PingCoroutine()
     {
@@ -189,6 +196,11 @@ public class Socket : MonoBehaviour
                             player.position.y = playerData.position.y;
                             player.position.z = playerData.position.z;
                         }
+                        break;
+                    }
+                case "killed":
+                    {
+                        Debug.Log("KILLED");
                         break;
                     }
                 case "error":

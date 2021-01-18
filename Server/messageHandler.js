@@ -68,6 +68,8 @@ const handle = (data, server) => {
             return switchPrivacity(data, server);
         case "launch-game":
             return launchGame(data, server);
+        case "action-knife":
+            return actionKnife(data, server);
         default:
             return {};
     }
@@ -313,6 +315,41 @@ const launchGame = (data, server) => {
         });
     });
 }
+
+const actionKnife = (data, server) => {
+    const inZone = (positionCurrentPlayer, radius, positionPlayer) => {
+        console.log({ positionCurrentPlayer, radius, positionPlayer });
+        if ((positionPlayer.x < positionCurrentPlayer.x + radius) && (positionPlayer.x > positionCurrentPlayer.x - radius) &&
+            (positionPlayer.y < positionCurrentPlayer.y + radius) && (positionPlayer.y > positionCurrentPlayer.y - radius))
+            return true;
+        return false;
+    }
+    const clientId = data.uuid;
+    const currentClient = clients[clientId];
+    const room = rooms[data.roomId];
+
+    currentClient.lastMsg = Date.now();
+
+    if (!room.impostorsIds.includes(clientId)) {
+        console.log(`[${clientId}] cheater !`);
+        return;
+    }
+
+    room.players.forEach((pid) => {
+        const client = clients[pid];
+
+        if (pid !== clientId && inZone(currentClient.position, 0.75, client.position)) {
+            server.send("killed", clients[pid].port, clients[pid].address, function (error) {
+                if (error) {
+                    client.close();
+                } else {
+                    console.log(`[${clientId}] killed ${pid} !`);
+                }
+            });
+        }
+    });
+}
+
 
 module.exports = {
     handle

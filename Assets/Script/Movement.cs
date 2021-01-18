@@ -43,6 +43,12 @@ public class Movement : MonoBehaviour
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;
 
+        if (Input.GetKeyDown(KeyCode.Space) && Socket.instance.currentPlayer.imposter)
+        {
+            Socket.instance.ActionKnife();
+        }
+
+
         animator.SetBool("Move", (horizontalMovement + verticalMovement) != 0);
         if (horizontalMovement < 0)
         {
@@ -68,4 +74,3 @@ public class Movement : MonoBehaviour
         }
     }
 }
-    
