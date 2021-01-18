@@ -9,12 +9,17 @@ public class Player
     public Room room;
     public Vector3 position;
     public bool instantiate;
+    public bool instantiateDeath;
     public bool imposter;
+    public bool isDead;
 
     public Player()
     {
         room = new Room();
+        instantiate = false;
         imposter = false;
+        isDead = false;
+        instantiateDeath = false;
     }
     public Player(string _uuid, string _color)
     {
@@ -24,5 +29,7 @@ public class Player
         position = new Vector3(0, 0, 0);
         instantiate = false;
         imposter = false;
+        isDead = false;
+        instantiateDeath = false;
     }
 }

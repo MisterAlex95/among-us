@@ -4,6 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public Transform spawnPoint;
+    public GameObject deadBody;
     public GameObject imposterText;
 
     private void Awake()
@@ -52,7 +53,20 @@ public class GameManager : MonoBehaviour
                 GameObject playerGO = GameObject.Find(player.uuid);
                 if (playerGO != null)
                 {
-                    playerGO.transform.position = player.position; // Apply Player position to object
+                    if (player.isDead && !player.instantiateDeath)
+                    {
+                        if (playerGO) Destroy(playerGO);
+                        GameObject newPlayerGO = Instantiate(deadBody, new Vector3(player.position.x, player.position.y, player.position.z), Quaternion.identity);
+                        Color color;
+                        if (ColorUtility.TryParseHtmlString("#" + player.color, out color))
+                            newPlayerGO.GetComponent<SpriteRenderer>().color = color;
+                        newPlayerGO.name = player.uuid;
+                        player.instantiateDeath = true;
+                    }
+                    else
+                    {
+                        playerGO.transform.position = player.position; // Apply Player position to object
+                    }
                 }
             }
         }

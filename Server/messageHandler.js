@@ -318,7 +318,6 @@ const launchGame = (data, server) => {
 
 const actionKnife = (data, server) => {
     const inZone = (positionCurrentPlayer, radius, positionPlayer) => {
-        console.log({ positionCurrentPlayer, radius, positionPlayer });
         if ((positionPlayer.x < positionCurrentPlayer.x + radius) && (positionPlayer.x > positionCurrentPlayer.x - radius) &&
             (positionPlayer.y < positionCurrentPlayer.y + radius) && (positionPlayer.y > positionCurrentPlayer.y - radius))
             return true;
@@ -335,11 +334,14 @@ const actionKnife = (data, server) => {
         return;
     }
 
+    let killedId;
+
     room.players.forEach((pid) => {
         const client = clients[pid];
 
         if (pid !== clientId && inZone(currentClient.position, 0.75, client.position)) {
-            server.send("killed", clients[pid].port, clients[pid].address, function (error) {
+            killedId = pid;
+            server.send("killed_nothing", clients[pid].port, clients[pid].address, function (error) {
                 if (error) {
                     client.close();
                 } else {
@@ -348,6 +350,18 @@ const actionKnife = (data, server) => {
             });
         }
     });
+
+    room.players.forEach((pid) => {
+        if (pid !== killedId) {
+            server.send("death_" + JSON.stringify({ killedId }), clients[pid].port, clients[pid].address, function (error) {
+                if (error) {
+                    client.close();
+                } else {
+                    console.log(`[${clientId}] send death of ${killedId} to ${pid} !`);
+                }
+            });
+        }
+    })
 }
 
 

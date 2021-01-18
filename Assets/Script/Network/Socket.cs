@@ -200,7 +200,13 @@ public class Socket : MonoBehaviour
                     }
                 case "killed":
                     {
-                        Debug.Log("KILLED");
+                        currentPlayer.isDead = true;
+                        break;
+                    }
+                case "death":
+                    {
+                        string killedId = JsonUtility.FromJson<DeathMessageAnswer>(data[1]).killedId;
+                        PlayerManager.instance.GetPlayer(killedId).isDead = true;
                         break;
                     }
                 case "error":

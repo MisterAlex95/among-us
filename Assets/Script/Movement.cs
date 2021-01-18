@@ -6,6 +6,7 @@ public class Movement : MonoBehaviour
 
     public static Movement instance;
     public SpriteRenderer spriteRenderer;
+    public Sprite deadSprite;
     public Rigidbody2D rb;
     public Animator animator;
 
@@ -40,6 +41,16 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        if (Socket.instance.currentPlayer.isDead)
+        {
+            if (!Socket.instance.currentPlayer.instantiateDeath)
+            {
+                Destroy(animator);
+                spriteRenderer.sprite = deadSprite;
+                Socket.instance.currentPlayer.instantiateDeath = true;
+            }
+            return;
+        }
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;
 

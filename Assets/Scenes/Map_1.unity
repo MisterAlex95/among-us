@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 2074836969}
+  deadBody: {fileID: 1914844955761957530, guid: dce8e5b00f59564448fa6c80bf66f1b4, type: 3}
   imposterText: {fileID: 1225405619}
 --- !u!1 &519420028
 GameObject:
