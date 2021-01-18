@@ -28,4 +28,9 @@ public class DontDestroyOnLoadScene : MonoBehaviour
             SceneManager.MoveGameObjectToScene(element, SceneManager.GetActiveScene());
         }
     }
+
+    public void AddToDontDestroyOnLoad(GameObject go)
+    {
+        DontDestroyOnLoad(go);
+    }
 }

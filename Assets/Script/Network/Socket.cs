@@ -87,6 +87,13 @@ public class Socket : MonoBehaviour
         d.isPrivate = isPrivate;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
     }
+    public void LaunchGame()
+    {
+        LaunchGameMessage d = new LaunchGameMessage();
+        d.uuid = currentPlayer.uuid;
+        d.roomId = currentPlayer.room.id;
+        SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
 
     IEnumerator PingCoroutine()
     {
@@ -164,6 +171,12 @@ public class Socket : MonoBehaviour
                         // Remove the player
                         string uuid = JsonUtility.FromJson<DisconnectMessageAnswer>(data[1]).uuid;
                         PlayerManager.instance.Disconnect(uuid);
+                        break;
+                    }
+                case "launch-game":
+                    {
+                        currentPlayer.imposter = JsonUtility.FromJson<LaunchGameMessageAnswer>(data[1]).imposter;
+                        PlayerManager.instance.isRunning = true;
                         break;
                     }
                 case "position":

@@ -3,7 +3,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public GameObject playerPrefab;
+    public Transform spawnPoint;
+    public GameObject imposterText;
 
     private void Awake()
     {
@@ -13,6 +14,19 @@ public class GameManager : MonoBehaviour
             return;
         }
         instance = this;
+    }
+
+    void Start()
+    {
+        GameObject playerGO = GameObject.Find("Player");
+        playerGO.transform.position = spawnPoint.position;
+
+        foreach (Player player in PlayerManager.instance.players)
+        {
+            player.position = spawnPoint.position;
+        }
+
+        imposterText.SetActive(Socket.instance.currentPlayer.imposter);
     }
 
     void Update()
@@ -26,23 +40,14 @@ public class GameManager : MonoBehaviour
                 Destroy(p);
             }
         }
-        
+
         // The list is cleared after the destroy
         PlayerManager.instance.playerToRemove.Clear();
 
         // We update the players
         foreach (Player player in PlayerManager.instance.players)
         {
-            if (!player.instantiate)
-            {
-                GameObject newPlayerGO = Instantiate(playerPrefab, new Vector3(player.position.x, player.position.y, player.position.z), Quaternion.identity);
-                Color color;
-                if (ColorUtility.TryParseHtmlString("#" + player.color, out color))
-                    newPlayerGO.GetComponent<SpriteRenderer>().color = color;
-                newPlayerGO.name = player.uuid;
-                player.instantiate = true;
-            }
-            else
+            if (player.instantiate)
             {
                 GameObject playerGO = GameObject.Find(player.uuid);
                 if (playerGO != null)

@@ -99,7 +99,6 @@ public class MenuManager : MonoBehaviour
         Socket.instance.ListRoom();
     }
 
-
     public void CancelToOnlineMenu()
     {
         currentMenu.SetActive(false);

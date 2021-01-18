@@ -6,6 +6,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager instance;
     public List<Player> players = new List<Player>();
     public List<string> playerToRemove = new List<string>();
+    public bool isRunning = false;
 
     private void Awake()
     {

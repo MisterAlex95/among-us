@@ -3,7 +3,8 @@
 Todo: 
  - EndOfLobby -> Launch game :
     - Set impostors
- - Private/Public room
+
+ - Send others imposter to other imposter + add borderline ?
  - Better error handler
  - Notification
  - Event ?

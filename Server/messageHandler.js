@@ -66,6 +66,8 @@ const handle = (data, server) => {
             return pong(data, server);
         case "switch-privacity":
             return switchPrivacity(data, server);
+        case "launch-game":
+            return launchGame(data, server);
         default:
             return {};
     }
@@ -86,7 +88,8 @@ const createRoom = (data, server) => {
         imposters: data.imposters,
         admin: clientId,
         players: [],
-        isPrivate: data.isPrivate
+        isPrivate: data.isPrivate,
+        isRunning: false
     };
 
     rooms[roomId] = room;
@@ -110,7 +113,7 @@ const listRoom = (data, server) => {
     Object.keys(rooms).forEach(roomId => {
         const room = rooms[roomId];
 
-        if (!room.isPrivate) {
+        if (!room.isPrivate && !room.isRunning) {
             listRoomAnswer.rooms.push({
                 id: roomId,
                 nbrPlayer: room.players.length,
@@ -134,7 +137,11 @@ const joinRoom = (data, server) => {
     const currentRoom = rooms[data.roomId];
     clients[clientId].lastMsg = Date.now();
     clients[clientId].roomId = data.roomId;
-
+    clients[clientId].position = {
+        x: 0,
+        y: 0,
+        z: 0
+    };
     if (!currentRoom) {
         const answer = { code: 404 };
         server.send("error_" + JSON.stringify(answer), clients[clientId].port, clients[clientId].address, function (error) {
@@ -153,6 +160,15 @@ const joinRoom = (data, server) => {
                 console.log(`[${clientId}] Error room full !`);
             }
         });
+    } else if (currentRoom.isRunning) {
+        const answer = { code: 401 };
+        server.send("error_" + JSON.stringify(answer), clients[clientId].port, clients[clientId].address, function (error) {
+            if (error) {
+                client.close();
+            } else {
+                console.log(`[${clientId}] Error room running !`);
+            }
+        });
     } else {
         const randomColor = Math.floor(Math.random() * 16777215).toString(16);
 
@@ -169,6 +185,8 @@ const joinRoom = (data, server) => {
             } else {
                 // Send each client to the new one
                 currentRoom.players.forEach(cId => {
+                    if (!clients[cId] || !clients[cId].position) return;
+
                     if (cId !== clientId) {
                         const clientData = { uuid: cId, color: clients[cId].color, position: { x: clients[cId].position.x, y: clients[cId].position.y, z: 0 } }
                         server.send("connexion_" + JSON.stringify(clientData), clients[clientId].port, clients[clientId].address, function (error) {
@@ -261,9 +279,39 @@ const switchPrivacity = (data, server) => {
     const clientId = data.uuid;
     const room = rooms[data.roomId];
 
+    clients[clientId].lastMsg = Date.now();
     if (room.admin === clientId) {
         room.isPrivate = data.isPrivate;
     }
+}
+
+const launchGame = (data, server) => {
+    const clientId = data.uuid;
+    const room = rooms[data.roomId];
+    room.isRunning = true;
+    clients[clientId].lastMsg = Date.now();
+
+    // Designed imposters
+    const impostorsIds = [];
+    const maxImposter = Math.min(room.imposters, room.players.length);
+
+    while (impostorsIds.length < maxImposter) {
+        const imposterId = room.players[Math.floor(Math.random() * Math.floor(room.players.length))];
+        if (!impostorsIds.includes(imposterId)) {
+            impostorsIds.push(imposterId);
+        }
+    }
+    room.impostorsIds = impostorsIds;
+
+    room.players.forEach(cId => {
+        server.send("launch-game_" + JSON.stringify({ imposter: impostorsIds.includes(cId) }), clients[cId].port, clients[cId].address, function (error) {
+            if (error) {
+                client.close();
+            } else {
+                console.log(`[${clientId}] Broadcasted to ${cId} !`);
+            }
+        });
+    });
 }
 
 module.exports = {
