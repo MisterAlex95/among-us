@@ -9,10 +9,17 @@ using UnityEngine;
 
 public class Socket : MonoBehaviour
 {
+    // Singleton
     public static Socket instance;
+
+    // To move 
     public Player currentPlayer;
     public List<Room> rooms;
+    // ---
 
+    // Events
+    private object asyncLock;
+    private List<GameEvent> eventQueue;
     public GameEvent startGameEvent;
     public GameEvent deathEvent;
     public GameEvent ownDeathEvent;
@@ -24,8 +31,6 @@ public class Socket : MonoBehaviour
     public string hostIp;
     public int hostPort;
     public IPEndPoint hostEndPoint;
-    private object asyncLock;
-    private List<GameEvent> eventQueue;
 
     private void Awake()
     {
@@ -136,7 +141,7 @@ public class Socket : MonoBehaviour
     public void SendDgram(string evento, string msg)
     {
         byte[] dgram = Encoding.UTF8.GetBytes(evento + "_" + msg);
-        Debug.Log("Send new :" + msg);
+        // Debug.Log("Send new :" + msg);
         client.Send(dgram, dgram.Length);
     }
     public void processDgram(IAsyncResult res)
@@ -145,7 +150,7 @@ public class Socket : MonoBehaviour
         {
             byte[] recieved = client.EndReceive(res, ref hostEndPoint);
             string[] data = Encoding.UTF8.GetString(recieved).Split('_');
-            Debug.Log("Receive - type :" + data[0] + " -data :" + data[1]);
+            if (data[0] != "position") Debug.Log("Receive - type :" + data[0] + " -data :" + data[1]);
 
             switch (data[0])
             {
