@@ -31,18 +31,6 @@ public class LobbyManager : MonoBehaviour
 
     void Update()
     {
-        if (PlayerManager.instance.isRunning)
-        {
-            foreach (Player player in PlayerManager.instance.players)
-            {
-                GameObject playerGO = GameObject.Find(player.uuid);
-                DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(playerGO);
-            }
-            GameObject currentPlayerGO = GameObject.Find("Player");
-            DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(currentPlayerGO);
-            SceneManager.LoadScene("Map_1");
-        }
-
         int count = PlayerManager.instance.players.Count + 1; // add +1 for you
         int totalCount = Socket.instance.currentPlayer.room.maxPlayers;
         CounterText.text = count + "/" + totalCount;
@@ -99,6 +87,17 @@ public class LobbyManager : MonoBehaviour
     {
         IsPrivate = !IsPrivate;
         Socket.instance.SwitchPrivacity(IsPrivate);
+    }
+    public void RunGame()
+    {
+        foreach (Player player in PlayerManager.instance.players)
+        {
+            GameObject playerGO = GameObject.Find(player.uuid);
+            DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(playerGO);
+        }
+        GameObject currentPlayerGO = GameObject.Find("Player");
+        DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(currentPlayerGO);
+        SceneManager.LoadScene("Map_1");
     }
     public void LaunchGame()
     {

@@ -13,12 +13,17 @@ public class Socket : MonoBehaviour
     public Player currentPlayer;
     public List<Room> rooms;
 
+    public GameEvent startGameEvent;
+    public GameEvent deathEvent;
+
     // Network
     public UdpClient client;
     public IPAddress serverIp;
     public string hostIp;
     public int hostPort;
     public IPEndPoint hostEndPoint;
+    private object asyncLock;
+    private List<GameEvent> eventQueue;
 
     private void Awake()
     {
@@ -40,6 +45,8 @@ public class Socket : MonoBehaviour
 
         currentPlayer = new Player();
         rooms = new List<Room>();
+        eventQueue = new List<GameEvent>();
+        asyncLock = new object();
 
         HandCheck();
         client.BeginReceive(new AsyncCallback(processDgram), client);
@@ -100,6 +107,20 @@ public class Socket : MonoBehaviour
         d.roomId = currentPlayer.room.id;
         d.uuid = currentPlayer.uuid;
         SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+    }
+
+    void Update()
+    {
+        if (eventQueue.Count == 0) return;
+
+        lock (asyncLock)
+        {
+            foreach (GameEvent ge in eventQueue)
+            {
+                ge.Raise();
+            }
+            eventQueue.Clear();
+        }
     }
 
     IEnumerator PingCoroutine()
@@ -183,7 +204,11 @@ public class Socket : MonoBehaviour
                 case "launch-game":
                     {
                         currentPlayer.imposter = JsonUtility.FromJson<LaunchGameMessageAnswer>(data[1]).imposter;
-                        PlayerManager.instance.isRunning = true;
+                        lock (asyncLock)
+                        {
+                            eventQueue.Add(startGameEvent);
+                            PlayerManager.instance.isRunning = true;
+                        }
                         break;
                     }
                 case "position":
@@ -206,7 +231,11 @@ public class Socket : MonoBehaviour
                 case "death":
                     {
                         string killedId = JsonUtility.FromJson<DeathMessageAnswer>(data[1]).killedId;
-                        PlayerManager.instance.GetPlayer(killedId).isDead = true;
+                        lock (asyncLock)
+                        {
+                            eventQueue.Add(deathEvent);
+                            PlayerManager.instance.GetPlayer(killedId).isDead = true;
+                        }
                         break;
                     }
                 case "error":
