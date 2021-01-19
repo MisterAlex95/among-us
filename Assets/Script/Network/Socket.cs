@@ -15,6 +15,7 @@ public class Socket : MonoBehaviour
 
     public GameEvent startGameEvent;
     public GameEvent deathEvent;
+    public GameEvent ownDeathEvent;
 
     // Network
     public UdpClient client;
@@ -225,7 +226,11 @@ public class Socket : MonoBehaviour
                     }
                 case "killed":
                     {
-                        currentPlayer.isDead = true;
+                        lock (asyncLock)
+                        {
+                            eventQueue.Add(ownDeathEvent);
+                            currentPlayer.isDead = true;
+                        }
                         break;
                     }
                 case "death":

@@ -41,16 +41,8 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (Socket.instance.currentPlayer.isDead)
-        {
-            if (!Socket.instance.currentPlayer.instantiateDeath)
-            {
-                Destroy(animator);
-                spriteRenderer.sprite = deadSprite;
-                Socket.instance.currentPlayer.instantiateDeath = true;
-            }
-            return;
-        }
+        if (Socket.instance.currentPlayer.isDead) return;
+
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;
 
@@ -58,7 +50,6 @@ public class Movement : MonoBehaviour
         {
             Socket.instance.ActionKnife();
         }
-
 
         animator.SetBool("Move", (horizontalMovement + verticalMovement) != 0);
         if (horizontalMovement < 0)
@@ -82,6 +73,15 @@ public class Movement : MonoBehaviour
             d.uuid = Socket.instance.currentPlayer.uuid;
             d.roomId = Socket.instance.currentPlayer.room.id;
             Socket.instance.SendDgram("JSON", JsonUtility.ToJson(d).ToString());
+        }
+    }
+
+    public void onDeath()
+    {
+        if (Socket.instance.currentPlayer.isDead)
+        {
+            Destroy(animator);
+            spriteRenderer.sprite = deadSprite;
         }
     }
 }

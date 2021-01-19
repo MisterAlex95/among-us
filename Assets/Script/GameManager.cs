@@ -4,7 +4,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public Transform spawnPoint;
-    public GameObject deadBody;
+    public Sprite deadBody;
     public GameObject imposterText;
 
     private void Awake()
@@ -51,23 +51,27 @@ public class GameManager : MonoBehaviour
             if (player.instantiate)
             {
                 GameObject playerGO = GameObject.Find(player.uuid);
-                if (playerGO != null)
+                if (playerGO != null && !player.isDead)
                 {
-                    if (player.isDead && !player.instantiateDeath)
-                    {
-                        if (playerGO) Destroy(playerGO);
-                        GameObject newPlayerGO = Instantiate(deadBody, new Vector3(player.position.x, player.position.y, player.position.z), Quaternion.identity);
-                        Color color;
-                        if (ColorUtility.TryParseHtmlString("#" + player.color, out color))
-                            newPlayerGO.GetComponent<SpriteRenderer>().color = color;
-                        newPlayerGO.name = player.uuid;
-                        player.instantiateDeath = true;
-                    }
-                    else
-                    {
-                        playerGO.transform.position = player.position; // Apply Player position to object
-                    }
+                    playerGO.transform.position = player.position; // Apply Player position to object
                 }
+            }
+        }
+    }
+
+    public void onDeath()
+    {
+        // For now we have to check each player as we cannot send value with event
+        foreach (Player player in PlayerManager.instance.players)
+        {
+            if (player.isDead)
+            {
+                GameObject playerGO = GameObject.Find(player.uuid);
+                if (playerGO)
+                {
+                    playerGO.GetComponent<SpriteRenderer>().sprite = deadBody;
+                }
+
             }
         }
     }

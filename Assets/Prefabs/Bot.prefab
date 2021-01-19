@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1914844955761957533}
   - component: {fileID: 1914844955761957532}
-  - component: {fileID: 1914844955761957531}
   - component: {fileID: 1914844955761957535}
   m_Layer: 0
   m_Name: Bot
@@ -84,25 +83,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &1914844955761957531
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1914844955761957530}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f11dcd47b3d9cbe4080e23da93896531, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!50 &1914844955761957535
 Rigidbody2D:
   serializedVersion: 4

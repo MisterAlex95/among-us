@@ -488,12 +488,12 @@ MonoBehaviour:
       isPrivate: 0
     position: {x: 0, y: 0, z: 0}
     instantiate: 0
-    instantiateDeath: 0
     imposter: 0
     isDead: 0
   rooms: []
   startGameEvent: {fileID: 11400000, guid: 3f378e03cfddb724cb238377632d41b5, type: 2}
-  deathEvent: {fileID: 11400000, guid: 630362ea5d87e0143bde63855f950034, type: 2}
+  deathEvent: {fileID: 11400000, guid: d4f2b9f41ff265943a1c15a9628dbab9, type: 2}
+  ownDeathEvent: {fileID: 11400000, guid: c29fb11c0a2d49a4b890436a8fc91418, type: 2}
   hostIp: 10.31.5.21
   hostPort: 8080
 --- !u!4 &142495189
