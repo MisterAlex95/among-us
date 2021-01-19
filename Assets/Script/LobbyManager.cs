@@ -47,18 +47,6 @@ public class LobbyManager : MonoBehaviour
             PrivateButton.gameObject.SetActive(false);
             LaunchButton.gameObject.SetActive(false);
         }
-        // We destroy the disconnected players
-        foreach (string playerToRemove in PlayerManager.instance.playerToRemove)
-        {
-            GameObject p = GameObject.Find(playerToRemove);
-            if (p)
-            {
-                Destroy(p);
-            }
-        }
-
-        // The list is cleared after the destroy
-        PlayerManager.instance.playerToRemove.Clear();
 
         // We update the players
         foreach (Player player in PlayerManager.instance.players)
@@ -102,5 +90,20 @@ public class LobbyManager : MonoBehaviour
     public void LaunchGame()
     {
         Socket.instance.LaunchGame();
+    }
+    public void Disconnect()
+    {
+        // We destroy the disconnected players
+        foreach (string playerToRemove in PlayerManager.instance.playerToRemove)
+        {
+            GameObject p = GameObject.Find(playerToRemove);
+            if (p)
+            {
+                Destroy(p);
+            }
+        }
+
+        // The list is cleared after the destroy
+        PlayerManager.instance.playerToRemove.Clear();
     }
 }

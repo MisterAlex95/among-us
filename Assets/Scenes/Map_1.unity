@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 90186736}
   - component: {fileID: 90186737}
   - component: {fileID: 90186738}
+  - component: {fileID: 90186739}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -189,6 +190,34 @@ MonoBehaviour:
       - m_Target: {fileID: 90186737}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: onDeath
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &90186739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90186735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4262ef870d4a79243af51eecd2601a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 3e5b0c23f153c374d8195f163677bb8e, type: 2}
+  response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 90186737}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: Disconnect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

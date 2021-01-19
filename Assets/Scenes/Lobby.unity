@@ -762,6 +762,7 @@ GameObject:
   - component: {fileID: 905588722}
   - component: {fileID: 905588721}
   - component: {fileID: 905588723}
+  - component: {fileID: 905588724}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -820,6 +821,34 @@ MonoBehaviour:
       - m_Target: {fileID: 905588721}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: RunGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &905588724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905588720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4262ef870d4a79243af51eecd2601a27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 3e5b0c23f153c374d8195f163677bb8e, type: 2}
+  response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 905588721}
+        m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
+        m_MethodName: Disconnect
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

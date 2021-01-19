@@ -494,6 +494,7 @@ MonoBehaviour:
   startGameEvent: {fileID: 11400000, guid: 3f378e03cfddb724cb238377632d41b5, type: 2}
   deathEvent: {fileID: 11400000, guid: d4f2b9f41ff265943a1c15a9628dbab9, type: 2}
   ownDeathEvent: {fileID: 11400000, guid: c29fb11c0a2d49a4b890436a8fc91418, type: 2}
+  disconnectEvent: {fileID: 11400000, guid: 3e5b0c23f153c374d8195f163677bb8e, type: 2}
   hostIp: 10.31.5.21
   hostPort: 8080
 --- !u!4 &142495189

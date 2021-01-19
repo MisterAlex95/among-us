@@ -16,6 +16,7 @@ public class Socket : MonoBehaviour
     public GameEvent startGameEvent;
     public GameEvent deathEvent;
     public GameEvent ownDeathEvent;
+    public GameEvent disconnectEvent;
 
     // Network
     public UdpClient client;
@@ -199,7 +200,11 @@ public class Socket : MonoBehaviour
                     {
                         // Remove the player
                         string uuid = JsonUtility.FromJson<DisconnectMessageAnswer>(data[1]).uuid;
-                        PlayerManager.instance.Disconnect(uuid);
+                        lock (asyncLock)
+                        {
+                            eventQueue.Add(disconnectEvent);
+                            PlayerManager.instance.Disconnect(uuid);
+                        }
                         break;
                     }
                 case "launch-game":
