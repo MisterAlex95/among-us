@@ -41,7 +41,7 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (Socket.instance.currentPlayer.isDead) return;
+        if (Socket.instance && Socket.instance.currentPlayer.isDead) return;
 
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;

@@ -4746,7 +4746,7 @@ GameObject:
   - component: {fileID: 1870365567}
   - component: {fileID: 1870365569}
   - component: {fileID: 1870365568}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6001,6 +6001,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2169809573402339309, guid: 1e3c9cdb1bee7344eaf1e14a9beed4c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4505822859935739475, guid: 1e3c9cdb1bee7344eaf1e14a9beed4c9, type: 3}
+      propertyPath: obstacleMask.m_Bits
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
