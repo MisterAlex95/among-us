@@ -86,9 +86,6 @@ public class LobbyManager : MonoBehaviour
         GameObject currentPlayerGO = GameObject.Find("Player");
         DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(currentPlayerGO);
 
-        GameObject FieldOfViewGO = GameObject.Find("FieldOfView");
-        DontDestroyOnLoadScene.instance.AddToDontDestroyOnLoad(FieldOfViewGO);
-
         SceneManager.LoadScene("Map_1");
     }
     public void LaunchGame()
