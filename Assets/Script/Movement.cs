@@ -9,6 +9,7 @@ public class Movement : MonoBehaviour
     public Sprite deadSprite;
     public Rigidbody2D rb;
     public Animator animator;
+    public FieldOfView fov;
 
     private Vector3 velocity = Vector3.zero;
     private float horizontalMovement;
@@ -42,6 +43,7 @@ public class Movement : MonoBehaviour
     void Update()
     {
         if (Socket.instance && Socket.instance.currentPlayer.isDead) return;
+        fov.SetOrigin(transform.position);
 
         horizontalMovement = Input.GetAxis("Horizontal") * moveSpeed * Time.fixedDeltaTime;
         verticalMovement = Input.GetAxis("Vertical") * moveSpeed * Time.fixedDeltaTime;
